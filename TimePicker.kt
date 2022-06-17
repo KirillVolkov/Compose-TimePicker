@@ -204,7 +204,7 @@ fun PickerTime.toLocalTime(): LocalTime {
     return LocalTime.of(
         when (timesOfDay) {
             TimesOfDay.AM -> hours
-            TimesOfDay.PM -> hours + 12
+            TimesOfDay.PM -> if (hours == 12) 0 else hours % 12 + 12
             else -> hours
         },
         minutes
