@@ -46,7 +46,7 @@ fun TimePicker(
             itemStyles = itemStyles,
             items = hours,
             selectedItem = pickerTime.hours,
-            itemToString = { String.format("%02d", it) },
+            itemToString = { if (is24TimeFormat) String.format("%02d", it) else it.toString() },
             modifier = Modifier
                 .fillMaxHeight(1f)
                 .fillMaxWidth(.3f),
@@ -196,15 +196,15 @@ fun parseTime(time: LocalTime, is24TimeFormat: Boolean): PickerTime {
     return PickerTime(
         hours = if (is24TimeFormat.not() && time.hour > 12) time.hour - 12 else time.hour,
         minutes = time.minute,
-        if (is24TimeFormat.not() && time.hour > 12) TimesOfDay.PM else TimesOfDay.AM
+        if (is24TimeFormat) null else if (time.hour > 12) TimesOfDay.PM else TimesOfDay.AM
     )
 }
 
 fun PickerTime.toLocalTime(): LocalTime {
     return LocalTime.of(
         when (timesOfDay) {
-            TimesOfDay.AM -> hours
-            TimesOfDay.PM -> if (hours == 12) 0 else hours % 12 + 12
+            TimesOfDay.AM -> hours % 12
+            TimesOfDay.PM -> hours % 12 + 12
             else -> hours
         },
         minutes
